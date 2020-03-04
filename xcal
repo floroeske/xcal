@@ -7,7 +7,7 @@ import numpy as np
 from subprocess import run, PIPE
 
 
-prop_name = 'libinput Calibration Matrix'
+prop_name = 'Coordinate Transformation Matrix'
 
 
 def xinput(*args):
@@ -100,6 +100,7 @@ def show_tk(n_points, old_cal_inv, new_cal=None):
     from math import ceil, sqrt
 
     root = Tk()
+    root.geometry("1920x1080")
     X, Y = None, None
     root.attributes('-fullscreen', True)
     canvas = Canvas(root)
@@ -204,7 +205,8 @@ def fit(screen_pts, mouse_pts):
     m_screen = np.matrix([[*p, 1] for p in screen_pts])
     m_mouse = np.matrix([[*p, 1] for p in mouse_pts])
     m_transform, residuals, rank, singular = np.linalg.lstsq(m_mouse, m_screen)
-    quality = -log10(residuals.sum())
+    # quality = -log10(residuals.sum())
+    quality = 1
     return m_transform, quality
 
 
@@ -261,6 +263,9 @@ def print_xorg_config(dev_name, new_cal):
         " ".join(map(str, new_cal.flatten().tolist()[0]))
     )
     print(xorg_config)
+
+    with open("99-touchscreen-calibration.conf", "w") as f:
+        f.write("{}".format(xorg_config))
 
 def main():
     devs = get_devs()
