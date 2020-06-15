@@ -264,7 +264,7 @@ def write_cal_script(dev, new_cal):
         f.write("{}".format(cmd))
         f.write(os.linesep)
 
-    os.chmod("screen_calibration.sh", os.stat.S_IRUSR | os.stat.S_IWUSR | os.stat.S_IXUSR)
+    os.chmod("screen_calibration.sh", 0o777)
 
 def use_cal(dev, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
