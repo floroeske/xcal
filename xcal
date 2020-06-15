@@ -246,11 +246,11 @@ def calibrate(points, disable_rot):
     return m_transform, quality
 
 
-def write_cal_script(dev, new_cal):
+def write_cal_script(dev_name, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
 
     cmd = "xinput --set-prop"
-    cmd += " '{}'".format(str(dev))
+    cmd += " '{}'".format(str(dev_name))
     cmd += " '{}'".format(prop_name)
     cmd += " {}".format(" ".join(repr(i) for i in cal_array))
 
@@ -322,7 +322,7 @@ def main():
         show_tk(n_points, old_cal_inv, new_cal)
 
     if new_cal is not None and ask('Write calibration script?'):
-        write_cal_script(dev, new_cal)
+        write_cal_script(devs[dev], new_cal)
 
     if new_cal is not None and ask('Use calibration?'):
         use_cal(dev, new_cal)
