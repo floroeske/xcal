@@ -257,14 +257,14 @@ def write_cal_script(dev, new_cal):
     print("cmd")
     print(cmd)
 
-    with open("screen_calibration.sh", "w") as f:
+    with open("calibration.sh", "w") as f:
         f.write("{}".format("#!/bin/sh"))
         f.write(os.linesep)
         f.write(os.linesep)
         f.write("{}".format(cmd))
         f.write(os.linesep)
 
-    os.chmod("screen_calibration.sh", 0o777)
+    os.chmod("calibration.sh", 0o777)
 
 def use_cal(dev, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
