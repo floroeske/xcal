@@ -2,6 +2,7 @@
 
 # requires python3-tk, python3-numpy
 
+import os
 import re
 import numpy as np
 from subprocess import run, PIPE
@@ -245,10 +246,28 @@ def calibrate(points, disable_rot):
     return m_transform, quality
 
 
+def write_cal_script(dev, new_cal):
+    cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
+
+    cmd = "xinput --set-prop"
+    cmd += " '{}'".format(str(dev))
+    cmd += " '{}'".format(prop_name)
+    cmd += " {}".format(" ".join(repr(i) for i in cal_array))
+
+    print("cmd")
+    print(cmd)
+
+    with open("calibration_scsript.bash", "w") as f:
+        f.write("{}".format("#!/bin/bash"))
+        f.write(os.linesep)
+        f.write(os.linesep)
+        f.write("{}".format(cmd))
+        f.write(os.linesep)
+
 def use_cal(dev, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
-    xinput('--set-prop', str(dev), prop_name, *cal_array)
-
+    p = xinput('--set-prop', str(dev), prop_name, *cal_array)
+    
 def print_xorg_config(dev_name, new_cal):
     print("Create a file (for example 99-libinput-ts-calib.conf) in /usr/share/X11/xorg.conf.d/ and put in the following")
     print()
@@ -274,6 +293,11 @@ def main():
     dev = choose_dev(devs, preferred)
     print()
 
+    if ask('Reset calibration matrix?'):
+        use_cal(dev, np.matrix([[1.0, 0.0, 0.0],
+                                [0.0, 1.0, 0.0],
+                                [0.0, 0.0, 1.0]]))
+
     old_cal, old_cal_inv = read_cal(dev)
 
     new_cal = None
@@ -295,8 +319,11 @@ def main():
         n_points = choose_points()
         show_tk(n_points, old_cal_inv, new_cal)
 
+    if new_cal is not None and ask('Write calibration script?'):
+        write_cal_script(dev, new_cal)
+
     if new_cal is not None and ask('Use calibration?'):
         use_cal(dev, new_cal)
-        print_xorg_config(devs[dev], new_cal)	
-
+        print_xorg_config(devs[dev], new_cal)
+    
 main()
