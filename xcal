@@ -177,7 +177,7 @@ def show_tk(n_points, old_cal_inv, new_cal=None):
         if not sensitive:
             return
         sensitive = False
-    
+
         sx, sy = point['sx'], point['sy']
 
         ox, oy = event.x/X, event.y/Y  # old-calibrated
@@ -217,7 +217,7 @@ def calibrate(points, disable_rot):
         [mx 1] [a 0]   [sx 1]
         [mx 1] [e 1] = [sx 1]
         [... ]         [... ]
-        
+
         [my 1] [d 0]   [sy 1]
         [my 1] [f 1] = [sy 1]
         [... ]         [... ]
@@ -264,11 +264,11 @@ def write_cal_script(dev, new_cal):
         f.write("{}".format(cmd))
         f.write(os.linesep)
 
-    os.chmod("screen_calibration.sh", stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+    os.chmod("screen_calibration.sh", os.stat.S_IRUSR | os.stat.S_IWUSR | os.stat.S_IXUSR)
 
 def use_cal(dev, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
-    p = xinput('--set-prop', str(dev), prop_name, *cal_array)
+    xinput('--set-prop', str(dev), prop_name, *cal_array)
 
 def print_xorg_config(dev_name, new_cal):
     print("Create a file (for example 99-libinput-ts-calib.conf) in /usr/share/X11/xorg.conf.d/ and put in the following")
@@ -327,5 +327,7 @@ def main():
     if new_cal is not None and ask('Use calibration?'):
         use_cal(dev, new_cal)
         print_xorg_config(devs[dev], new_cal)
-    
-main()
+
+if __name__ == "__main__":
+    main()
+
