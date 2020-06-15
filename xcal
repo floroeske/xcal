@@ -257,17 +257,19 @@ def write_cal_script(dev, new_cal):
     print("cmd")
     print(cmd)
 
-    with open("calibration_scsript.bash", "w") as f:
-        f.write("{}".format("#!/bin/bash"))
+    with open("screen_calibration.sh", "w") as f:
+        f.write("{}".format("#!/bin/sh"))
         f.write(os.linesep)
         f.write(os.linesep)
         f.write("{}".format(cmd))
         f.write(os.linesep)
 
+    os.chmod("screen_calibration.sh", stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+
 def use_cal(dev, new_cal):
     cal_array = [str(x)+',' for x in new_cal.flatten().tolist()[0]]
     p = xinput('--set-prop', str(dev), prop_name, *cal_array)
-    
+
 def print_xorg_config(dev_name, new_cal):
     print("Create a file (for example 99-libinput-ts-calib.conf) in /usr/share/X11/xorg.conf.d/ and put in the following")
     print()
